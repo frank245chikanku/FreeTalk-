@@ -1,6 +1,6 @@
 import { Router,  Request,  Response, NextFunction } from "express";  
 
-import post from '../models/post'
+import post from '../../models/post'
 
 
 

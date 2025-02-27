@@ -12,25 +12,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.newCommentRouter = void 0;
+exports.deleteCommentRouter = void 0;
 const express_1 = require("express");
-const comment_1 = __importDefault(require("../../models/comment"));
 const post_1 = __importDefault(require("../../models/post"));
+const comment_1 = __importDefault(require("../../models/comment"));
 const router = (0, express_1.Router)();
-exports.newCommentRouter = router;
-router.post('/api/comment/new', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userName, content } = req.body;
-    const { postId } = req.params;
-    if (!content) {
-        const error = new Error('content is required');
+exports.deleteCommentRouter = router;
+router.delete('/api/comment/:commentId/delete/:postId', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { postId, commentId } = req.params;
+    if (!commentId || !postId) {
+        const error = new Error('post id and comment are required');
         error.status = 400;
-        return next(error);
+        next(error);
     }
-    const newComment = new comment_1.default({
-        userName: userName ? userName : 'anonymous',
-        content
-    });
-    yield newComment.save();
-    const updatepost = yield post_1.default.findOneAndUpdate({ _id: postId }, { $push: { comments: newComment } }, { new: true });
-    res.status(201).send(updatepost);
+    try {
+        yield comment_1.default.findOneAndDelete({ _id: commentId });
+    }
+    catch (err) {
+        next(new Error('comment cannot be updated'));
+    }
+    yield post_1.default.findOneAndUpdate({ _id: postId }, { $pull: { comments: commentId } });
+    res.status(200).json({ success: true });
 }));

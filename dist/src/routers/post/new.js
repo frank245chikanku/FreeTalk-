@@ -12,25 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.newCommentRouter = void 0;
+exports.newPostRouter = void 0;
 const express_1 = require("express");
-const comment_1 = __importDefault(require("../../models/comment"));
 const post_1 = __importDefault(require("../../models/post"));
 const router = (0, express_1.Router)();
-exports.newCommentRouter = router;
-router.post('/api/comment/new', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userName, content } = req.body;
-    const { postId } = req.params;
-    if (!content) {
-        const error = new Error('content is required');
+exports.newPostRouter = router;
+router.post('/api/post/new', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { title, content } = req.body;
+    if (!title || !content) {
+        const error = new Error('title and content are required!');
         error.status = 400;
         return next(error);
     }
-    const newComment = new comment_1.default({
-        userName: userName ? userName : 'anonymous',
+    const newPost = new post_1.default({
+        title,
         content
     });
-    yield newComment.save();
-    const updatepost = yield post_1.default.findOneAndUpdate({ _id: postId }, { $push: { comments: newComment } }, { new: true });
-    res.status(201).send(updatepost);
+    yield newPost.save();
+    res.status(201).send(newPost);
 }));

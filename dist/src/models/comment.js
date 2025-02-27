@@ -5,11 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const commentSchema = new mongoose_1.default.Schema({
-    userName: {},
+    userName: {
+        type: String,
+        required: true,
+        default: "anonymous"
+    },
     content: {
         type: String,
         required: true
     }
 });
-const post = mongoose_1.default.model('comment', commentSchema);
+const Comment = mongoose_1.default.model('Comment', commentSchema);
 exports.default = Comment;

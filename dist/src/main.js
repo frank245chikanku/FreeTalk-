@@ -50,9 +50,27 @@ dotenv.config();
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = require("body-parser");
 const mongoose_1 = __importDefault(require("mongoose"));
+const cors_1 = __importDefault(require("cors"));
+const routers_1 = require("./routers");
 const app = (0, express_1.default)();
-app.use((0, body_parser_1.urlencoded)({ extended: true }));
+app.use((0, cors_1.default)({
+    origin: "*",
+    optionsSuccessStatus: 200
+}));
+app.use((0, body_parser_1.urlencoded)({ extended: true
+}));
 app.use((0, body_parser_1.json)());
+app.use(routers_1.newPostRouter);
+app.use(routers_1.deletepostRouter);
+app.use(routers_1.updatePostRouter);
+app.use(routers_1.showpostRouter);
+app.use(routers_1.newCommentRouter);
+app.use(routers_1.deleteCommentRouter);
+app.all('*', (req, res, next) => {
+    const error = new Error('not found!');
+    error.status = 404;
+    next(error);
+});
 app.get('/error', (req, res, next) => {
     const error = new Error('This is a test error');
     error.status = 400;

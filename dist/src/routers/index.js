@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteCommentRouter = exports.newCommentRouter = exports.showpostRouter = exports.updatePostRouter = exports.deletepostRouter = exports.newPostRouter = void 0;
-// src/routers/index.ts
 const new_1 = require("./post/new");
 Object.defineProperty(exports, "newPostRouter", { enumerable: true, get: function () { return new_1.newPostRouter; } });
 const delete_1 = require("./post/delete");

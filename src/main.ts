@@ -6,13 +6,25 @@ dotenv.config();
 import express, { Request, Response, NextFunction } from 'express';
 import { json, urlencoded } from 'body-parser';
 import mongoose from 'mongoose';
+import cors from 'cors'
 import {newPostRouter, deletepostRouter, updatePostRouter, showpostRouter, newCommentRouter, deleteCommentRouter} from './routers'
 
 
 
 
 const app = express();
-app.use(urlencoded({ extended: true }));
+
+app.use(cors( 
+    {
+        origin: "*",
+        optionsSuccessStatus:200 
+    }
+))
+
+
+app.use(urlencoded({ extended: true 
+
+}));
 app.use(json());
 
 

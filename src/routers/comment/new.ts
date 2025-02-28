@@ -15,7 +15,7 @@ const router = Router ()
         return next(error)
     }
     const newComment = new Comment({
-        userName: userName ? userName : 'anonymous',
+        userName: userName ? userName : 'anonymous',   
         content   
     });  
     await newComment.save()

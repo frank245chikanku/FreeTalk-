@@ -30,4 +30,4 @@ router.post('/signup', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-export default router;
+export {router as signupRouter}

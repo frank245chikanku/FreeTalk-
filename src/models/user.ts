@@ -20,4 +20,8 @@ const userSchema = new mongoose.Schema({
 
 })
 
+userSchema.pre('save', async function(done) {
+
+})
+
 export const  user  =  mongoose.model('User', userSchema);

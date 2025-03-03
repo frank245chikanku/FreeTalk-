@@ -1,27 +1,35 @@
-import mongoose from "mongoose";  
+import mongoose, { Schema, Document, Model } from "mongoose";
 
-const userSchema = new mongoose.Schema({
+
+export interface IUser extends Document {
+    email: string;
+    password: string;
+    posts: mongoose.Types.ObjectId[];
+}
+
+
+const userSchema = new Schema<IUser>({
     email: {
-        type: String, 
+        type: String,
         required: true
-    }, 
-
-    password: {
-        type: String,  
-        required:true
     },
-
+    password: {
+        type: String,
+        required: true
+    },
     posts: [
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: "Post"
         }
     ]
+});
 
-})
 
-userSchema.pre('save', async function(done) {
+userSchema.pre<IUser>("save", async function (next) {
+    
+    next();
+});
 
-})
 
-export const  user  =  mongoose.model('User', userSchema);
+export const user: Model<IUser> = mongoose.model<IUser>("User", userSchema);

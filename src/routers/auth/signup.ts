@@ -1,33 +1,47 @@
-import { Router, Request, Response } from 'express';
-import { user as User } from '../../models/user'; 
+import { Router, Request, Response, NextFunction } from 'express';
+import { user, IUser } from '../../models/user'; 
+import { authenticationService } from '../../../common';
+import jwt from 'jsonwebtoken';
+
 const router = Router();
 
-router.post('/signup', async (req: Request, res: Response): Promise<void> => {
+router.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            res.status(400).json({ message: 'Email and password are required' });
-            return;
+            return next(new Error('Email and password are required'));
         }
 
         
-        const existingUser = await User.findOne({ email });
+        const existingUser = await user.findOne({ email });
 
         if (existingUser) {
-            res.status(400).json({ message: 'User with the same email already exists' });
-            return;
+            return next(new Error('User with this email already exists'));
         }
 
         
-        const newUser = new User({ email, password });
+        const hashedPassword = await authenticationService.hashPassword(password);
+
+        
+        const newUser = new user({ email, password: hashedPassword });
         await newUser.save();
 
-        res.status(201).json({ message: 'User registered successfully', user: newUser });
+        
+        const token = jwt.sign(
+            { email, userId: newUser._id },  
+            process.env.JWT_KEY!,
+            { expiresIn: "1h" } 
+        );
+
+        
+        req.session = { jwt: token };
+
+        res.status(201).json({ message: 'User registered successfully', token, user: newUser });
 
     } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
+        next(error);
     }
 });
 
-export {router as signupRouter}
+export { router as signupRouter };

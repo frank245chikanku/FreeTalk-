@@ -1,10 +1,16 @@
-export abstract class CustomError extends Error{
-    abstract statusCode: number; 
-
+// src/errors/custom-error.ts
+export class CustomError extends Error {
+    statusCode: number;
 
     constructor(message: string) {
-        super(message); 
+        super(message);
+        this.statusCode = 400;  // Default to a 400 error
+        // Ensure the error is captured properly in stack traces
+        Object.setPrototypeOf(this, CustomError.prototype);
     }
 
-    abstract generateError(): {message: string, field?: string } []
+    // You may return a serializable error object
+    generateError() {
+        return [{ message: this.message }];
+    }
 }

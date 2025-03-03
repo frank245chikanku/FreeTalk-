@@ -23,11 +23,11 @@ router.post('/signin', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     const { email, password } = req.body;
     const existingUser = yield user_1.user.findOne({ email });
     if (!existingUser) {
-        return next(new Error('Wrong credentials'));
+        return next(new common_1.BadRequestError('Wrong credentials'));
     }
     const isEqual = yield common_1.authenticationService.pwdCompare(existingUser.password, password);
     if (!isEqual) {
-        return next(new Error('Wrong credentials'));
+        return next(new common_1.BadRequestError('Wrong credentials'));
     }
     const token = jsonwebtoken_1.default.sign({ email, userId: existingUser._id }, process.env.JWT_KEY, { expiresIn: "1h" });
     req.session = { jwt: token };

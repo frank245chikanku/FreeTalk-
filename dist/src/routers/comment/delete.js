@@ -16,20 +16,19 @@ exports.deleteCommentRouter = void 0;
 const express_1 = require("express");
 const post_1 = __importDefault(require("../../models/post"));
 const comment_1 = __importDefault(require("../../models/comment"));
+const common_1 = require("common");
 const router = (0, express_1.Router)();
 exports.deleteCommentRouter = router;
 router.delete('/api/comment/:commentId/delete/:postId', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { postId, commentId } = req.params;
     if (!commentId || !postId) {
-        const error = new Error('post id and comment are required');
-        error.status = 400;
-        next(error);
+        const error = new common_1.BadRequestError('post id and comment are required');
     }
     try {
         yield comment_1.default.findOneAndDelete({ _id: commentId });
     }
     catch (err) {
-        next(new Error('comment cannot be updated'));
+        next(new common_1.BadRequestError('comment cannot be updated'));
     }
     yield post_1.default.findOneAndUpdate({ _id: postId }, { $pull: { comments: commentId } });
     res.status(200).json({ success: true });

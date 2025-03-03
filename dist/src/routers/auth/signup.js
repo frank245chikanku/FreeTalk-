@@ -23,7 +23,7 @@ router.post('/signup', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     try {
         const { email, password } = req.body;
         if (!email || !password) {
-            return next(new Error('Email and password are required'));
+            return next(new common_1.BadRequestError('Email and password are required'));
         }
         const existingUser = yield user_1.user.findOne({ email });
         if (existingUser) {

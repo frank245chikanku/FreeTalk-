@@ -75,24 +75,20 @@ app.use(routers_1.showpostRouter);
 app.use(common_1.requireAuth, routers_1.newCommentRouter);
 app.use(common_1.requireAuth, routers_1.deleteCommentRouter);
 app.all('*', (req, res, next) => {
-    const error = new Error('not found!');
-    error.status = 404;
-    next(error);
+    next(new common_1.NotFoundError());
 });
 app.get('/error', (req, res, next) => {
     const error = new Error('This is a test error');
     error.status = 400;
     next(error);
 });
-const errorHandler = (error, req, res, next) => {
+const localErrorHandler = (error, req, res, next) => {
     if (error.status) {
         return res.status(error.status).json({ message: error.message });
     }
     res.status(500).json({ message: 'Something went wrong' });
 };
-app.use((error, req, res, next) => {
-    errorHandler(error, req, res, next);
-});
+//app.use(errorHandler)  
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!process.env.MONGO_URI)
         throw new Error('MONGO_URI is required!');

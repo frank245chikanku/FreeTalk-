@@ -10,7 +10,9 @@ import cors from 'cors'
 import cookieSession from 'cookie-session';
 
 import {newPostRouter, deletepostRouter, updatePostRouter, showpostRouter, newCommentRouter, deleteCommentRouter} from './routers'
-import { currentUser, requireAuth } from '../common'
+import { currentUser, requireAuth, NotFoundError, errorHandler } from '../common'
+
+
 
 
 
@@ -45,9 +47,7 @@ app.use(requireAuth, deleteCommentRouter)
 
 
 app.all('*', (req,res, next) => { 
-    const error = new Error('not found!') as CustomError; 
-    error.status = 404
-    next(error)
+    next(new NotFoundError())
 })
 
 
@@ -65,7 +65,7 @@ app.get('/error', (req: Request, res: Response, next: NextFunction) => {
 });
 
 
-const errorHandler = (error: CustomError, req: Request, res: Response, next: NextFunction) => {
+const localErrorHandler = (error: CustomError, req: Request, res: Response, next: NextFunction) => {
     if (error.status) {
         return res.status(error.status).json({ message: error.message });
     }
@@ -73,9 +73,7 @@ const errorHandler = (error: CustomError, req: Request, res: Response, next: Nex
 };
 
 
-app.use((error: CustomError, req: Request, res: Response, next: NextFunction) => {
-    errorHandler(error, req, res, next);  
-});
+  app.use(errorHandler)  
 
 
 const start = async () => {

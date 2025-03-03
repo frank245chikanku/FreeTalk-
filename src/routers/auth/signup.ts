@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { user, IUser } from '../../models/user'; 
-import { authenticationService } from '../../../common';
+import { authenticationService, BadRequestError} from '../../../common';
 import jwt from 'jsonwebtoken';
 
 const router = Router();
@@ -10,7 +10,7 @@ router.post('/signup', async (req: Request, res: Response, next: NextFunction) =
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return next(new Error('Email and password are required'));
+            return next(new BadRequestError('Email and password are required'));
         }
 
         

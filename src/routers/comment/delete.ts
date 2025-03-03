@@ -1,6 +1,7 @@
 import {Router, Response, Request, NextFunction } from 'express'
 import post from '../../models/post'
 import Comment from '../../models/comment'
+import { BadRequestError } from 'common'
 
 
 const router = Router()  
@@ -9,15 +10,13 @@ router.delete('/api/comment/:commentId/delete/:postId', async (req: Request, res
     const { postId, commentId } = req.params; 
 
     if(!commentId || !postId) {
-        const error = new Error('post id and comment are required') as CustomError; 
-        error.status = 400; 
-        next(error)
+        const error = new BadRequestError('post id and comment are required') 
     }
 
     try{
         await Comment.findOneAndDelete({_id: commentId})
     } catch(err) {
-        next(new Error('comment cannot be updated'))
+        next(new BadRequestError('comment cannot be updated'))
     }
 
     await post.findOneAndUpdate({_id: postId }, {$pull:{comments: commentId }}) 

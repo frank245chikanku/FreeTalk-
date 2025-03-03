@@ -51,21 +51,29 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = require("body-parser");
 const mongoose_1 = __importDefault(require("mongoose"));
 const cors_1 = __importDefault(require("cors"));
+const cookie_session_1 = __importDefault(require("cookie-session"));
 const routers_1 = require("./routers");
+const common_1 = require("../common");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: "*",
     optionsSuccessStatus: 200
 }));
-app.use((0, body_parser_1.urlencoded)({ extended: true
+app.set('trust proxy', true);
+app.use((0, body_parser_1.urlencoded)({ extended: false
 }));
 app.use((0, body_parser_1.json)());
-app.use(routers_1.newPostRouter);
-app.use(routers_1.deletepostRouter);
-app.use(routers_1.updatePostRouter);
+app.use((0, cookie_session_1.default)({
+    signed: false,
+    secure: false,
+}));
+app.use(common_1.currentUser);
+app.use(common_1.requireAuth, routers_1.newPostRouter);
+app.use(common_1.requireAuth, routers_1.deletepostRouter);
+app.use(common_1.requireAuth, routers_1.updatePostRouter);
 app.use(routers_1.showpostRouter);
-app.use(routers_1.newCommentRouter);
-app.use(routers_1.deleteCommentRouter);
+app.use(common_1.requireAuth, routers_1.newCommentRouter);
+app.use(common_1.requireAuth, routers_1.deleteCommentRouter);
 app.all('*', (req, res, next) => {
     const error = new Error('not found!');
     error.status = 404;
@@ -87,7 +95,9 @@ app.use((error, req, res, next) => {
 });
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!process.env.MONGO_URI)
-        throw new Error('MONGO_URI is required');
+        throw new Error('MONGO_URI is required!');
+    if (!process.env.JWT_KEY)
+        throw new Error('JWT_KEY is required!');
     try {
         yield mongoose_1.default.connect(process.env.MONGO_URI);
     }

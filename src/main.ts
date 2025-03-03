@@ -10,6 +10,7 @@ import cors from 'cors'
 import cookieSession from 'cookie-session';
 
 import {newPostRouter, deletepostRouter, updatePostRouter, showpostRouter, newCommentRouter, deleteCommentRouter} from './routers'
+import { currentUser, requireAuth } from '../common'
 
 
 
@@ -33,14 +34,14 @@ app.use(cookieSession({
     signed: false, 
     secure: false,
 }))
-
-app.use(newPostRouter)
-app.use(deletepostRouter)
-app.use(updatePostRouter) 
+app.use(currentUser)
+app.use(requireAuth,newPostRouter)
+app.use(requireAuth,deletepostRouter)
+app.use(requireAuth,updatePostRouter) 
 app.use(showpostRouter) 
 
-app.use(newCommentRouter)  
-app.use(deleteCommentRouter)
+app.use(requireAuth, newCommentRouter)  
+app.use(requireAuth, deleteCommentRouter)
 
 
 app.all('*', (req,res, next) => { 
